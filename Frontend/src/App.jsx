@@ -1,0 +1,20 @@
+import React from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import Login from './components/Login/Login'
+import './App.css'
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        {/* Directly redirect root to /login */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
+        <Route path="/login" element={<Login />} />
+        {/* Redirect unknown routes to /login */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </Router>
+  )
+}
+
+export default App
