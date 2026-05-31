@@ -1,4 +1,4 @@
-from fastapi import FastAPI,File,UploadFile
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import numpy as np
@@ -8,6 +8,8 @@ import cv2
 import io
 from tensorflow.keras.applications.resnet50 import preprocess_input
 
+import ragEngine
+
 
 app = FastAPI(title="Kisan Mitra AI - Model Server")
 
@@ -16,6 +18,13 @@ class PredictionResponse(BaseModel):
     display_name: str
     confidence: float
     is_healthy: bool
+
+class ChatRequest(BaseModel):
+    user_query: str
+    detected_disease: str
+
+class ChatResponse(BaseModel):
+    reply: str
 
 app.add_middleware(
     CORSMiddleware,
@@ -48,17 +57,17 @@ def root():
 async def predict(image: UploadFile = File(...)):
     contents = await image.read()
     
-    # PIL → numpy (same as Gradio's numpy input)
+    # PIL → numpy 
     img = Image.open(io.BytesIO(contents)).convert("RGB")
-    img = np.array(img)                          # HWC, uint8
+    img = np.array(img)                          
     
-    # Resize (same as your Gradio code)
+    # Resize 
     img = cv2.resize(img, (224, 224))
     
-    # Expand dims (same as your Gradio code)
+    # Expand dimensions
     img = np.expand_dims(img, axis=0)
     
-    # ResNet50 preprocessing (same as your Gradio code)
+    # ResNet50 preprocessing 
     img = preprocess_input(img)
 
     predictions = model.predict(img)[0]
@@ -72,3 +81,20 @@ async def predict(image: UploadFile = File(...)):
         confidence=round(confidence, 2),
         is_healthy=disease == "healthy"
     )
+
+
+@app.post("/chat/remedy", response_model=ChatResponse)
+async def chat_remedy(payload: ChatRequest):
+    try:
+        # Pull corresponding display name string for localized prompting
+        display_name = DISPLAY_NAMES.get(payload.detected_disease, payload.detected_disease)
+        
+        # Query your custom rag_engine layer
+        ai_reply = ragEngine.generate_remedy(
+            user_query=payload.user_query,
+            detected_disease=payload.detected_disease,
+            display_name=display_name
+        )
+        return ChatResponse(reply=ai_reply)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"RAG thread execution failure: {str(e)}")
