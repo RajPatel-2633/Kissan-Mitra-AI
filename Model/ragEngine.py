@@ -1,4 +1,6 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
 from pydantic import BaseModel, Field
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
@@ -8,6 +10,13 @@ from langchain_core.output_parsers import JsonOutputParser
 
 DB_DIR = "./chroma_db"
 
+DISEASE_MAP = {
+    "bacterial_blight": "Bacterial Blight",
+    "curl_virus": "Cotton Leaf Curl Virus",
+    "fusarium_wilt": "Fusarium Wilt",
+    "healthy": "Healthy Cotton Leaf"
+}
+
 class IntentClassifier(BaseModel):
     intent: str = Field(description=
                         "Must be exactly either 'disease treatment' or 'general farming'.")
@@ -15,8 +24,8 @@ class IntentClassifier(BaseModel):
 
 embedding_model = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
-router_llm = ChatGroq(model="llama3-8b-8192", temperature=0.0)
-generation_llm = ChatGroq(model="llama3-8b-8192", temperature=0.3)
+router_llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0.0)
+generation_llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0.3)
 
 if os.path.exists(DB_DIR):
     vector_store = Chroma(persist_directory=DB_DIR, embedding_function=embedding_model)
@@ -60,6 +69,8 @@ def generate_remedy(user_query: str, detected_disease: str, display_name: str) -
     """
     user_intent = route_user_intent(user_query)
     print(f"User input classified as: {user_intent}")
+
+    display_name = DISEASE_MAP.get(detected_disease, detected_disease)
     
     if user_intent == "disease treatment":
         if not vector_store:

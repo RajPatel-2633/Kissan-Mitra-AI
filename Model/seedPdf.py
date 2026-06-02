@@ -4,7 +4,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 
-PDF_PATH = ""
+PDF_PATH = "cotton_manual.pdf"
 DB_DIR = "./chroma_db"
 
 def build_vector_store():

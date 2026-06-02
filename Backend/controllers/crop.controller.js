@@ -8,7 +8,7 @@ import ApiResponse from "../utils/ApiResponse.utils.js";
 import { response } from "express";
 
 
-const diagnoseCrop = asyncHandler((req,res,next)=>{
+const diagnoseCrop = asyncHandler(async(req,res,next)=>{
     if(req.file){
         throw new BadRequestError("No Leaf Image Uploaded");
     }
@@ -25,7 +25,7 @@ const diagnoseCrop = asyncHandler((req,res,next)=>{
     });
 
 
-    const modelResponse = await axios.get(`${process.env.FASTAPI_URI}/predict`,form,{
+    const modelResponse = await axios.post(`${process.env.FASTAPI_URI}/predict`,form,{
         headers:{...form.getHeaders()}
     });
 
@@ -54,7 +54,7 @@ const diagnoseCrop = asyncHandler((req,res,next)=>{
 
 });
 
-const chatWithAI = asyncHandler((req,res,next)=>{
+const chatWithAI = asyncHandler(async(req,res,next)=>{
     const {message} = req.body;
     const {recordId} = req.params;
 
@@ -81,14 +81,14 @@ const chatWithAI = asyncHandler((req,res,next)=>{
     return res.status(200).json(new ApiResponse(200,AIReply,"Response Returned Successfully"));
 });
 
-const getUserChatHistory =  asyncHandler((req,res,next)=>{
+const getUserChatHistory =  asyncHandler(async(req,res,next)=>{
     const userId = req.user.id;
     const farmerScans = await History.find({userId}).select('-chatLog').sort({ createdAt: -1 });
     return res.status(200).json(new ApiResponse(200,AIReply,"History Retrieved Successfully"));
 });
 
 
-const getChatHistory = asyncHandler((req,res,next)=>{
+const getChatHistory = asyncHandler(async(req,res,next)=>{
     const userId = req.user.id;
     const chatRecord = await History.findOne({
         _id:req.params.recordId,
