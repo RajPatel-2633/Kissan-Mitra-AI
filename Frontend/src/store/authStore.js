@@ -16,8 +16,10 @@ const useAuthStore = create((set) => ({
         isAuthenticated: true, 
         isLoading: false 
       });
+      return true;
     } catch (error) {
       set({ error: 'Failed to login. Please check your credentials.', isLoading: false });
+      return false;
     }
   },
 
@@ -26,13 +28,15 @@ const useAuthStore = create((set) => ({
     try {
       // Simulate API call for signup
       await new Promise(resolve => setTimeout(resolve, 1000));
+      // In Signup -> Login flow, we do NOT set isAuthenticated to true here.
+      // We just resolve to let the component handle redirecting to Login.
       set({ 
-        user: { name: userData.name, mobile: userData.mobile }, 
-        isAuthenticated: true, 
         isLoading: false 
       });
+      return true;
     } catch (error) {
       set({ error: 'Failed to create account.', isLoading: false });
+      return false;
     }
   },
 

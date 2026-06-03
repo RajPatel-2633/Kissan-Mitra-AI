@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, 
@@ -13,8 +14,9 @@ import {
 } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 
-const AuthPage = () => {
-  const [isLogin, setIsLogin] = useState(false); // Default to Sign Up to match mockup
+const AuthPage = ({ isLoginRoute = false }) => {
+  const navigate = useNavigate();
+  const isLogin = isLoginRoute;
   const [showPassword, setShowPassword] = useState(false);
   
   const { login, signup, isLoading, error, clearError } = useAuthStore();
@@ -46,9 +48,16 @@ const AuthPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isLogin) {
-      await login({ email: formData.email, password: formData.password });
+      const success = await login({ email: formData.email, password: formData.password });
+      if (success) {
+        navigate('/dashboard');
+      }
     } else {
-      await signup({ name: formData.name, email: formData.email, password: formData.password });
+      const success = await signup({ name: formData.name, email: formData.email, password: formData.password });
+      if (success) {
+        // Redirect to Login upon successful Signup
+        navigate('/api/v1/auth/login');
+      }
     }
   };
 
@@ -63,11 +72,11 @@ const AuthPage = () => {
       <div className="relative z-10 w-full h-full flex flex-col justify-start py-6 px-4 lg:py-12 lg:px-8 lg:pl-16 xl:pl-24">
         
         {/* TOP SECTION: Headers */}
-        <div className="max-w-2xl mt-0">
-          <div className="flex items-center gap-2 mb-2">
+        <div className="max-w-3xl mt-0">
+          <div className="flex items-center gap-4 mb-4">
             {/* Custom Logo Icon */}
-            <div className="bg-white rounded-full p-1.5 shadow-sm flex items-center justify-center">
-              <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-[#2b9365]">
+            <div className="bg-white rounded-full p-3 shadow-sm flex items-center justify-center">
+              <svg viewBox="0 0 24 24" fill="none" className="w-12 h-12 lg:w-16 lg:h-16 text-[#2b9365]">
                 <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.58 20 4 16.42 4 12C4 7.58 7.58 4 12 4C16.42 4 20 7.58 20 12C20 16.42 16.42 20 12 20Z" fill="currentColor"/>
                 <path d="M12 18V12M12 12L8 8M12 12L16 8M12 12L12 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 {/* Decorative leaves */}
@@ -75,15 +84,15 @@ const AuthPage = () => {
                 <path d="M17 14C18.1046 14 19 13.1046 19 12C19 10.8954 18.1046 10 17 10C15.8954 10 15 10.8954 15 12C15 13.1046 15.8954 14 17 14Z" fill="#a3d9a5"/>
               </svg>
             </div>
-            <h1 className="text-2xl lg:text-3xl font-extrabold text-[#113a26] tracking-tight">
+            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-extrabold text-[#113a26] tracking-tight">
               Kissan-Mitra-AI
             </h1>
           </div>
           
-          <div className="flex items-center gap-2 mb-1.5 text-[#2b9365] font-semibold text-base ml-2">
-            <span>🌿</span>
-            <span>AI Saathi. Kisan ki Tarakki.</span>
-            <span>🌿</span>
+          <div className="flex items-center gap-3 mb-1.5 text-[#113a26] font-extrabold text-2xl lg:text-3xl ml-4 drop-shadow-[0_2px_4px_rgba(255,255,255,0.9)]">
+            <span className="drop-shadow-md">🌿</span>
+            <span className="[text-shadow:_0_1px_8px_rgb(255_255_255_/_0.8)]">AI Saathi. Kisan ki Tarakki.</span>
+            <span className="drop-shadow-md">🌿</span>
           </div>
         </div>
 
@@ -205,7 +214,7 @@ const AuthPage = () => {
               {isLogin ? "Don't have an account? " : "Already have an account? "}
               <button 
                 type="button"
-                onClick={() => setIsLogin(!isLogin)}
+                onClick={() => navigate(isLogin ? '/api/v1/auth/register' : '/api/v1/auth/login')}
                 className="text-[#2b9365] font-semibold hover:underline ml-1"
               >
                 {isLogin ? "Sign up" : "Log in"}
