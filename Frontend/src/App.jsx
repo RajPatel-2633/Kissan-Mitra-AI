@@ -1,40 +1,69 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 import AuthPage from './pages/AuthPage'
 import DashboardLayout from './components/DashboardLayout'
 import DashboardPage from './pages/DashboardPage'
 import AIAssistancePage from './pages/AIAssistancePage'
+import HistoryPage from './pages/HistoryPage'
 import ProtectedRoute from './components/ProtectedRoute'
+import useAuthStore from './store/authStore'
 import './App.css'
 
 function App() {
-  return (
-    <Router>
-      <Routes>
-        {/* Auth Routes */}
-        <Route path="/" element={<Navigate to="/api/v1/auth/register" replace />} />
-        <Route path="/api/v1/auth/register" element={<AuthPage isLoginRoute={false} />} />
-        <Route path="/api/v1/auth/login" element={<AuthPage isLoginRoute={true} />} />
-        
-        {/* Protected Dashboard Routes */}
-        <Route 
-          path="/dashboard" 
-          element={
-            <ProtectedRoute>
-              <DashboardLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<DashboardPage />} />
-          <Route path="ai-assistance" element={<AIAssistancePage />} />
-          {/* Add more nested routes for /dashboard/crop here later */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
-        </Route>
+  const { checkAuth, isAuthenticated, isLoading } = useAuthStore();
 
-        {/* Redirect unknown routes to auth */}
-        <Route path="*" element={<Navigate to="/api/v1/auth/register" replace />} />
-      </Routes>
-    </Router>
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  // Note: Since checkAuth is async, we might want to return a loading spinner here 
+  // if we add a global isLoading state, but for now we'll just let it render.
+
+  return (
+    <>
+      <Toaster 
+        position="top-center" 
+        toastOptions={{
+          style: {
+            borderRadius: '12px',
+            background: '#333',
+            color: '#fff',
+            fontSize: '14px',
+            fontWeight: '500',
+          },
+          success: { style: { background: '#2b9365', color: '#fff' } },
+          error: { style: { background: '#ef4444', color: '#fff' } },
+        }} 
+      />
+      <Router>
+        <Routes>
+          {/* Auth Routes */}
+          <Route path="/" element={<Navigate to="/api/v1/auth/register" replace />} />
+          <Route path="/api/v1/auth/register" element={<AuthPage isLoginRoute={false} />} />
+          <Route path="/api/v1/auth/login" element={<AuthPage isLoginRoute={true} />} />
+          
+          {/* Protected Dashboard Routes */}
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<DashboardPage />} />
+            <Route path="ai-assistance" element={<AIAssistancePage />} />
+            <Route path="history" element={<HistoryPage />} />
+            {/* Add more nested routes for /dashboard/crop here later */}
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Route>
+
+          {/* Redirect unknown routes to auth */}
+          <Route path="*" element={<Navigate to="/api/v1/auth/register" replace />} />
+        </Routes>
+      </Router>
+    </>
   )
 }
 

@@ -1,5 +1,41 @@
-import React, { useState } from 'react';
-import { Upload, ShieldCheck, Send, Info, X, Leaf, Search, CheckCircle2, AlertTriangle } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Upload, ShieldCheck, Send, Info, X, Leaf, Search, CheckCircle2, AlertTriangle, Loader2, User } from 'lucide-react';
+import api from '../lib/axios';
+import { toast } from 'react-hot-toast';
+import ReactMarkdown from 'react-markdown';
+
+const AnimatedAIMessage = ({ content }) => {
+  const [displayedText, setDisplayedText] = useState('');
+
+  useEffect(() => {
+    let i = 0;
+    const interval = setInterval(() => {
+      setDisplayedText(content.slice(0, i));
+      i++;
+      if (i > content.length) {
+        clearInterval(interval);
+      }
+    }, 15);
+    return () => clearInterval(interval);
+  }, [content]);
+
+  return (
+    <ReactMarkdown
+      components={{
+        h1: ({node, ...props}) => <h1 className="text-xl font-extrabold text-[#113a26] mt-4 mb-2" {...props} />,
+        h2: ({node, ...props}) => <h2 className="text-lg font-extrabold text-[#113a26] mt-3 mb-2" {...props} />,
+        h3: ({node, ...props}) => <h3 className="text-base font-bold text-[#113a26] mt-2 mb-1" {...props} />,
+        strong: ({node, ...props}) => <strong className="font-extrabold text-[#113a26]" {...props} />,
+        p: ({node, ...props}) => <p className="mb-2 last:mb-0 leading-relaxed" {...props} />,
+        ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-2 space-y-1" {...props} />,
+        ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-2 space-y-1" {...props} />,
+        li: ({node, ...props}) => <li className="leading-relaxed" {...props} />
+      }}
+    >
+      {displayedText}
+    </ReactMarkdown>
+  );
+};
 
 const DEMO_IMAGES = [
   { id: 1, src: '/assets/real_cotton_1.jpg', label: 'Healthy Leaf' },
@@ -11,6 +47,27 @@ const AIAssistancePage = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [predictionResult, setPredictionResult] = useState(null);
+  const [currentRecordId, setCurrentRecordId] = useState(null);
+  const [chatHistory, setChatHistory] = useState([]);
+  const [chatInput, setChatInput] = useState('');
+  const [isChatting, setIsChatting] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleFileSelect = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const imageUrl = URL.createObjectURL(file);
+      setSelectedImage({ src: imageUrl, label: file.name });
+      setPredictionResult(null);
+    }
+  };
+
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
 
   const handleDragStart = (e, image) => {
     e.dataTransfer.setData('application/json', JSON.stringify(image));
@@ -37,37 +94,64 @@ const AIAssistancePage = () => {
     }
   };
 
-  const handlePredict = () => {
+  const handlePredict = async () => {
     if (!selectedImage) return;
     setIsAnalyzing(true);
     setPredictionResult(null);
     
-    // Simulate AI processing delay
-    setTimeout(() => {
-      setIsAnalyzing(false);
+    try {
+      const response = await fetch(selectedImage.src);
+      const blob = await response.blob();
       
-      // Simple mock logic for demo based on label
-      let disease = "Healthy";
-      let severity = "low";
-      let recommendation = "Your crop is healthy! Keep maintaining current watering and nutrient schedules.";
+      const formData = new FormData();
+      formData.append('crop_image', blob, selectedImage.label || 'image.jpg');
       
-      if (selectedImage.label.toLowerCase().includes('yellow') || selectedImage.label.toLowerCase().includes('2')) {
-        disease = "Bacterial Blight";
-        severity = "high";
-        recommendation = "Apply copper-based fungicides immediately. Avoid overhead irrigation to prevent spreading.";
-      } else if (selectedImage.label.toLowerCase().includes('curl') || selectedImage.label.toLowerCase().includes('3')) {
-        disease = "Cotton Leaf Curl Virus (CLCuV)";
-        severity = "critical";
-        recommendation = "Uproot and burn infected plants. Control whitefly populations using neem oil or recommended insecticides.";
-      }
-
+      const apiRes = await api.post('/crop/diagnose', formData);
+      
+      const data = apiRes.data.data;
+      
+      setCurrentRecordId(data.recordId);
       setPredictionResult({
-        disease,
-        confidence: (Math.random() * 5 + 92).toFixed(1) + "%", // 92% - 97%
-        severity,
-        recommendation
+        disease: data.displayName,
+        confidence: data.confidence.toFixed(1) + "%",
+        severity: data.isHealthy ? "low" : "high",
+        recommendation: "Please ask the AI assistant on the right for organic remedies and detailed solutions."
       });
-    }, 2500);
+      
+      setChatHistory([]);
+      toast.success("Analysis complete!");
+      
+    } catch (error) {
+      console.error("Diagnosis Error:", error.response?.data || error.message);
+      toast.error(error.response?.data?.message || "Failed to analyze image. Please try again.");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleSendMessage = async (e, text = null) => {
+    if (e) e.preventDefault();
+    const messageToSend = text || chatInput;
+    if (!messageToSend.trim()) return;
+    if (!currentRecordId) {
+      toast.error("Please upload and diagnose an image first.");
+      return;
+    }
+    
+    const newChatHistory = [...chatHistory, { sender: 'Farmer', message: messageToSend }];
+    setChatHistory(newChatHistory);
+    setChatInput('');
+    setIsChatting(true);
+    
+    try {
+      const res = await api.post(`/crop/chat/${currentRecordId}`, { message: messageToSend });
+      setChatHistory([...newChatHistory, { sender: 'AI', message: res.data.data }]);
+    } catch (error) {
+      console.error("Chat error:", error);
+      setChatHistory([...newChatHistory, { sender: 'AI', message: "Sorry, I am having trouble connecting to the network right now." }]);
+    } finally {
+      setIsChatting(false);
+    }
   };
 
   return (
@@ -151,10 +235,18 @@ const AIAssistancePage = () => {
                 </div>
               ) : (
                 <div 
+                  onClick={handleUploadClick}
                   onDragOver={handleDragOver}
                   onDrop={handleDrop}
                   className="relative border-2 border-dashed border-gray-200 rounded-2xl p-8 flex flex-col items-center justify-center text-center bg-gray-50/50 mb-4 hover:bg-gray-50 hover:border-[#2b9365]/30 transition-colors cursor-pointer group min-h-[220px]"
                 >
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleFileSelect} 
+                    accept="image/jpeg, image/png, image/jpg" 
+                    className="hidden" 
+                  />
                   {selectedImage ? (
                     <>
                       <button 
@@ -241,43 +333,75 @@ const AIAssistancePage = () => {
           </p>
 
           {/* Chat Area */}
-          <div className="flex-1 overflow-y-auto mb-6 flex flex-col gap-4 relative z-10">
+          <div className="flex-1 overflow-y-auto mb-6 flex flex-col gap-4 relative z-10 pr-2">
             
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 rounded-full bg-white border border-green-100 flex items-center justify-center shadow-sm flex-shrink-0 mt-1">
                  <span className="text-sm">🌿</span>
               </div>
               <div className="bg-white border border-green-50 px-5 py-3.5 rounded-2xl rounded-tl-sm shadow-sm max-w-[85%]">
-                <p className="text-[14px] font-medium text-gray-700">Hi Kisan! How can I help you today?</p>
+                <p className="text-[14px] font-medium text-gray-700">Hi Kisan! {currentRecordId ? "I see your diagnosis is ready. How can I help you treat this crop?" : "Please upload a crop image on the left to get started!"}</p>
               </div>
             </div>
+            
+            {chatHistory.map((chat, idx) => (
+              <div key={idx} className={`flex items-start gap-3 ${chat.sender === 'Farmer' ? 'flex-row-reverse' : ''}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center shadow-sm flex-shrink-0 mt-1 ${chat.sender === 'Farmer' ? 'bg-[#15803d] text-white' : 'bg-white border border-green-100'}`}>
+                   {chat.sender === 'Farmer' ? <User size={16} /> : <span className="text-sm">🌿</span>}
+                </div>
+                <div className={`px-5 py-3.5 rounded-2xl shadow-sm max-w-[85%] ${chat.sender === 'Farmer' ? 'bg-[#15803d] text-white rounded-tr-sm' : 'bg-white border border-green-50 rounded-tl-sm'}`}>
+                  {chat.sender === 'Farmer' ? (
+                    <p className="text-[14px] font-medium whitespace-pre-wrap text-white">{chat.message}</p>
+                  ) : (
+                    <div className="text-[14px] font-medium text-gray-700">
+                      <AnimatedAIMessage content={chat.message} />
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+            
+            {isChatting && (
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-white border border-green-100 flex items-center justify-center shadow-sm flex-shrink-0 mt-1">
+                   <span className="text-sm">🌿</span>
+                </div>
+                <div className="bg-white border border-green-50 px-5 py-3.5 rounded-2xl rounded-tl-sm shadow-sm flex items-center gap-2">
+                  <Loader2 size={16} className="text-[#2b9365] animate-spin" />
+                  <p className="text-[14px] font-medium text-gray-500">Typing...</p>
+                </div>
+              </div>
+            )}
             
           </div>
 
           {/* Suggestions */}
           <div className="flex gap-3 mb-6 flex-wrap relative z-10">
-             <button className="bg-white border border-gray-100 px-4 py-3 rounded-xl text-[12px] font-bold text-gray-600 hover:text-[#15803d] hover:border-green-200 transition-colors shadow-sm text-left leading-tight max-w-[150px]">
+             <button onClick={() => handleSendMessage(null, "My plant leaves are turning yellow")} disabled={!currentRecordId || isChatting} className="bg-white border border-gray-100 px-4 py-3 rounded-xl text-[12px] font-bold text-gray-600 hover:text-[#15803d] hover:border-green-200 transition-colors shadow-sm text-left leading-tight max-w-[150px] disabled:opacity-50 disabled:cursor-not-allowed">
                My plant leaves are turning yellow
              </button>
-             <button className="bg-white border border-gray-100 px-4 py-3 rounded-xl text-[12px] font-bold text-gray-600 hover:text-[#15803d] hover:border-green-200 transition-colors shadow-sm text-left leading-tight max-w-[150px]">
+             <button onClick={() => handleSendMessage(null, "How to increase yield naturally?")} disabled={!currentRecordId || isChatting} className="bg-white border border-gray-100 px-4 py-3 rounded-xl text-[12px] font-bold text-gray-600 hover:text-[#15803d] hover:border-green-200 transition-colors shadow-sm text-left leading-tight max-w-[150px] disabled:opacity-50 disabled:cursor-not-allowed">
                How to increase yield naturally?
              </button>
-             <button className="bg-white border border-gray-100 px-4 py-3 rounded-xl text-[12px] font-bold text-gray-600 hover:text-[#15803d] hover:border-green-200 transition-colors shadow-sm text-left leading-tight max-w-[150px]">
+             <button onClick={() => handleSendMessage(null, "Best organic pesticide for pests?")} disabled={!currentRecordId || isChatting} className="bg-white border border-gray-100 px-4 py-3 rounded-xl text-[12px] font-bold text-gray-600 hover:text-[#15803d] hover:border-green-200 transition-colors shadow-sm text-left leading-tight max-w-[150px] disabled:opacity-50 disabled:cursor-not-allowed">
                Best organic pesticide for pests?
              </button>
           </div>
 
           {/* Input */}
-          <div className="relative z-10">
+          <form onSubmit={handleSendMessage} className="relative z-10">
             <input 
               type="text" 
-              placeholder="Type your question here..." 
-              className="w-full bg-white border border-gray-200 rounded-2xl py-4 pl-6 pr-16 text-[14px] font-medium text-gray-700 focus:outline-none focus:border-[#2b9365] focus:ring-4 focus:ring-green-50 transition-all shadow-sm"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              disabled={!currentRecordId || isChatting}
+              placeholder={currentRecordId ? "Type your question here..." : "Diagnose an image to start chatting..."}
+              className="w-full bg-white border border-gray-200 rounded-2xl py-4 pl-6 pr-16 text-[14px] font-medium text-gray-700 focus:outline-none focus:border-[#2b9365] focus:ring-4 focus:ring-green-50 transition-all shadow-sm disabled:opacity-60 disabled:cursor-not-allowed disabled:bg-gray-50"
             />
-            <button className="absolute right-2 top-2 bottom-2 bg-[#15803d] text-white w-12 rounded-xl flex items-center justify-center hover:bg-[#166534] transition-colors shadow-sm">
+            <button type="submit" disabled={!currentRecordId || !chatInput.trim() || isChatting} className="absolute right-2 top-2 bottom-2 bg-[#15803d] text-white w-12 rounded-xl flex items-center justify-center hover:bg-[#166534] transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
               <Send size={18} className="-ml-1" />
             </button>
-          </div>
+          </form>
 
         </div>
 
