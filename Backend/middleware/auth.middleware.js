@@ -5,7 +5,7 @@ export const authMiddleware = async(req,res,next)=>{
     try{
         const accessToken = req.cookies?.accessToken;
         if(!accessToken){
-            throw new NotFoundError("Access Token Missing");
+            throw new UnauthorizedError("Access Token Missing");
         }
         const decoded = jwt.verify(accessToken,process.env.ACCESS_SECRET);
         req.user = decoded;

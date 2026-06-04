@@ -48,7 +48,7 @@ const loginUser = asyncHandler(async(req,res,next)=>{
         sameSite:"lax"
     }
     const refreshCookieOptions={
-        maxAge:1000*60*15,
+        maxAge:1000*60*60*24*7,
         httpOnly:true,
         secure:true,
         sameSite:"lax"
@@ -204,4 +204,40 @@ const logoutUser = asyncHandler(async(req,res,next)=>{
     
 });
 
-export {registerUser,loginUser,getProfile,forgotPassword,verifyOTP,resetPassword,updateProfile,logoutUser};
+const refreshTokenUser = asyncHandler(async(req,res,next)=>{
+    const refreshToken = req.cookies?.refreshToken;
+    if(!refreshToken){
+        throw new UnauthorizedError("Refresh Token Missing");
+    }
+
+    try {
+        const decoded = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+        
+        const user = await User.findById(decoded.id);
+        if(!user){
+            throw new UnauthorizedError("User not found for this token");
+        }
+
+        const accessToken = jwt.sign({
+            id: user._id,
+            role: user.role
+        }, process.env.ACCESS_SECRET, {
+            expiresIn: "15m"
+        });
+
+        const accessCookieOptions = {
+            maxAge: 1000 * 60 * 15,
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax"
+        };
+
+        res.cookie("accessToken", accessToken, accessCookieOptions);
+
+        return res.status(200).json(new ApiResponse(200, accessToken, "Access Token Refreshed"));
+    } catch(err) {
+        throw new UnauthorizedError("Invalid or Expired Refresh Token");
+    }
+});
+
+export {registerUser,loginUser,getProfile,forgotPassword,verifyOTP,resetPassword,updateProfile,logoutUser,refreshTokenUser};
