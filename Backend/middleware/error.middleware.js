@@ -17,8 +17,9 @@ const errorMiddleware = (err,req,res,next)=>{
     }
     // Unknown Errors
     if(!(err instanceof ApiError)){
+        console.error("UNHANDLED ERROR:", err);
         statusCode = 500;
-        message = "Internal Server Error";
+        message = err.message || "Internal Server Error";
         errors = [];
     }
 

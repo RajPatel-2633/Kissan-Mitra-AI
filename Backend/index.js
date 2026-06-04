@@ -1,14 +1,12 @@
+import 'dotenv/config';
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import dotenv from "dotenv";
 import errorMiddleware from "./middleware/error.middleware.js";
 import authRoutes from "./routes/auth.routes.js"
 import cropRoutes from "./routes/crop.routes.js"
 
 import db from "./utils/db.utils.js";
-
-dotenv.config();
 
 const app = express();
 

@@ -9,7 +9,7 @@ import { response } from "express";
 
 
 const diagnoseCrop = asyncHandler(async(req,res,next)=>{
-    if(req.file){
+    if(!req.file){
         throw new BadRequestError("No Leaf Image Uploaded");
     }
 
@@ -17,10 +17,10 @@ const diagnoseCrop = asyncHandler(async(req,res,next)=>{
 
     const form = new FormData();
     const image = await axios.get(cloudinaryImageURL,{
-        responseType:'stream'
+        responseType:'arraybuffer'
     });
     form.append('image',image.data,{
-        filename: req.file.filename,
+        filename: req.file.originalname,
         contentType: req.file.mimetype
     });
 
@@ -74,8 +74,8 @@ const chatWithAI = asyncHandler(async(req,res,next)=>{
 
     const AIReply =  RAGResponse.data.reply;
 
-    historySession.chatLog.push({ sender: 'Farmer', message: message });
-    historySession.chatLog.push({ sender: 'AI', message: AIReply });
+    historySession.chatLog.push({ sender: 'farmer', message: message });
+    historySession.chatLog.push({ sender: 'ai', message: AIReply });
     await historySession.save();
 
     return res.status(200).json(new ApiResponse(200,AIReply,"Response Returned Successfully"));
@@ -84,7 +84,7 @@ const chatWithAI = asyncHandler(async(req,res,next)=>{
 const getUserChatHistory =  asyncHandler(async(req,res,next)=>{
     const userId = req.user.id;
     const farmerScans = await History.find({userId}).select('-chatLog').sort({ createdAt: -1 });
-    return res.status(200).json(new ApiResponse(200,AIReply,"History Retrieved Successfully"));
+    return res.status(200).json(new ApiResponse(200,farmerScans,"History Retrieved Successfully"));
 });
 
 
