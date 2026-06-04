@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import api from '../lib/axios';
 import { Loader2, Calendar, Activity, CheckCircle2, AlertTriangle, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 
 const HistoryPage = () => {
   const [history, setHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -14,7 +18,7 @@ const HistoryPage = () => {
         setHistory(res.data.data);
       } catch (error) {
         console.error("Failed to fetch history:", error);
-        toast.error("Failed to load your scan history.");
+        toast.error(t("Failed to load your scan history."));
       } finally {
         setIsLoading(false);
       }
@@ -37,8 +41,8 @@ const HistoryPage = () => {
           <Activity className="text-[#2b9365] w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-2xl font-extrabold text-[#113a26]">My Scan History</h1>
-          <p className="text-sm text-gray-500 font-medium">Review your past crop diagnoses and AI conversations.</p>
+          <h1 className="text-2xl font-extrabold text-[#113a26]">{t('My Scan History')}</h1>
+          <p className="text-sm text-gray-500 font-medium">{t('Review your past crop diagnoses and AI conversations.')}</p>
         </div>
       </div>
 
@@ -47,8 +51,8 @@ const HistoryPage = () => {
           <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-3xl">🌿</span>
           </div>
-          <h3 className="text-xl font-bold text-gray-800 mb-2">No Scans Yet</h3>
-          <p className="text-gray-500 max-w-sm mx-auto mb-6">You haven't scanned any crops yet. Head over to the AI Assistant to get started.</p>
+          <h3 className="text-xl font-bold text-gray-800 mb-2">{t('No Scans Yet')}</h3>
+          <p className="text-gray-500 max-w-sm mx-auto mb-6">{t("You haven't scanned any crops yet. Head over to the AI Assistant to get started.")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -68,10 +72,13 @@ const HistoryPage = () => {
                 </div>
                 <h3 className="text-lg font-bold text-gray-800 mb-1">{record.displayName}</h3>
                 <p className="text-sm text-gray-500 mb-4 line-clamp-2">
-                  {record.isHealthy ? 'Crop is healthy. Keep up the good work!' : 'Disease detected. Requires immediate attention and treatment.'}
+                  {record.isHealthy ? t('Crop is healthy. Keep up the good work!') : t('Disease detected. Requires immediate attention and treatment.')}
                 </p>
-                <button className="w-full py-2.5 bg-gray-50 hover:bg-green-50 text-[#15803d] rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors">
-                  View Chat <ArrowRight size={16} />
+                <button 
+                  onClick={() => navigate(`/dashboard/ai-assistance?recordId=${record._id}`)}
+                  className="w-full py-2.5 bg-gray-50 hover:bg-green-50 text-[#15803d] rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors"
+                >
+                  {t('View Chat')} <ArrowRight size={16} />
                 </button>
               </div>
             </div>

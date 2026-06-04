@@ -6,6 +6,7 @@ import DashboardLayout from './components/DashboardLayout'
 import DashboardPage from './pages/DashboardPage'
 import AIAssistancePage from './pages/AIAssistancePage'
 import HistoryPage from './pages/HistoryPage'
+import SettingsPage from './pages/SettingsPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import useAuthStore from './store/authStore'
 import './App.css'
@@ -55,6 +56,7 @@ function App() {
             <Route index element={<DashboardPage />} />
             <Route path="ai-assistance" element={<AIAssistancePage />} />
             <Route path="history" element={<HistoryPage />} />
+            <Route path="settings" element={<SettingsPage />} />
             {/* Add more nested routes for /dashboard/crop here later */}
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Route>

@@ -18,6 +18,7 @@ const AuthPage = ({ isLoginRoute = false }) => {
   const navigate = useNavigate();
   const isLogin = isLoginRoute;
   const [showPassword, setShowPassword] = useState(false);
+  const [showVideoIntro, setShowVideoIntro] = useState(false);
   
   const { login, signup, isLoading, error, clearError } = useAuthStore();
   
@@ -50,7 +51,7 @@ const AuthPage = ({ isLoginRoute = false }) => {
     if (isLogin) {
       const success = await login({ email: formData.email, password: formData.password });
       if (success) {
-        navigate('/dashboard');
+        setShowVideoIntro(true);
       }
     } else {
       const success = await signup({ name: formData.name, email: formData.email, password: formData.password });
@@ -63,6 +64,33 @@ const AuthPage = ({ isLoginRoute = false }) => {
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-[#e6f4ea] font-sans selection:bg-[#2b9365] selection:text-white">
+      {/* Intro Video Overlay */}
+      <AnimatePresence>
+        {showVideoIntro && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black flex items-center justify-center"
+          >
+            <video 
+              src="/assets/intro_video.mp4" 
+              autoPlay 
+              playsInline 
+              muted
+              onEnded={() => navigate('/dashboard')}
+              className="w-full h-full object-cover"
+            />
+            <button 
+              onClick={() => navigate('/dashboard')}
+              className="absolute top-6 right-6 bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-5 py-2.5 rounded-full text-sm font-bold transition-all z-50 border border-white/20 hover:border-white/40 shadow-xl"
+            >
+              Skip
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Background Image */}
       <div 
         className="absolute inset-0 w-full h-full bg-no-repeat"

@@ -5,18 +5,21 @@ import toast from 'react-hot-toast';
 const useAuthStore = create((set) => ({
   user: null,
   isAuthenticated: false,
+  isCheckingAuth: true,
   isLoading: false,
   error: null,
 
   checkAuth: async () => {
+    set({ isCheckingAuth: true });
     try {
       const res = await api.get('/auth/profile');
       set({ 
         user: res.data.data, 
-        isAuthenticated: true 
+        isAuthenticated: true,
+        isCheckingAuth: false
       });
     } catch (error) {
-      set({ user: null, isAuthenticated: false });
+      set({ user: null, isAuthenticated: false, isCheckingAuth: false });
     }
   },
 
