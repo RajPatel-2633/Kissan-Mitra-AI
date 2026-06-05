@@ -15,7 +15,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/api/v1/auth/login" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return children;

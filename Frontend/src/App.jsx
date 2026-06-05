@@ -40,9 +40,9 @@ function App() {
       <Router>
         <Routes>
           {/* Auth Routes */}
-          <Route path="/" element={<Navigate to="/api/v1/auth/register" replace />} />
-          <Route path="/api/v1/auth/register" element={<AuthPage isLoginRoute={false} />} />
-          <Route path="/api/v1/auth/login" element={<AuthPage isLoginRoute={true} />} />
+          <Route path="/" element={<Navigate to="/register" replace />} />
+          <Route path="/register" element={<AuthPage isLoginRoute={false} />} />
+          <Route path="/login" element={<AuthPage isLoginRoute={true} />} />
           
           {/* Protected Dashboard Routes */}
           <Route 
@@ -62,7 +62,7 @@ function App() {
           </Route>
 
           {/* Redirect unknown routes to auth */}
-          <Route path="*" element={<Navigate to="/api/v1/auth/register" replace />} />
+          <Route path="*" element={<Navigate to="/register" replace />} />
         </Routes>
       </Router>
     </>
