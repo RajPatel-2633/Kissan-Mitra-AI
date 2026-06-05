@@ -8,7 +8,7 @@ import cv2
 import io
 from tensorflow.keras.applications.resnet50 import preprocess_input
 
-import ragEngine
+# import ragEngine
 
 
 app = FastAPI(title="Kisan Mitra AI - Model Server")
@@ -34,7 +34,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model = tf.keras.models.load_model("Kissan_AI_Model.keras")
+model = None
+
+def get_model():
+    global model
+    if model is None:
+        print("Loading Kissan AI Model into memory dynamically")
+        model = tf.keras.models.load_model("Kissan_AI_Model.keras")
+        print("Model loaded successfully!")
+    return model
 
 CLASS_NAMES = [
     "bacterial_blight",
@@ -71,7 +79,10 @@ async def predict(image: UploadFile = File(...)):
     # ResNet50 preprocessing 
     img = preprocess_input(img)
 
-    predictions = model.predict(img)[0]
+    #Retrieve the model weights inside the route
+    current_model = get_model()
+
+    predictions = current_model.predict(img)[0]
     class_index = int(np.argmax(predictions))
     confidence = float(np.max(predictions)) * 100
     disease = CLASS_NAMES[class_index]
@@ -87,6 +98,10 @@ async def predict(image: UploadFile = File(...)):
 @app.post("/chat/remedy", response_model=ChatResponse)
 async def chat_remedy(payload: ChatRequest):
     try:
+
+        # Lazy import ragEngine only when a chat request arrives
+        import ragEngine
+        
         # Pull corresponding display name string for localized prompting
         display_name = DISPLAY_NAMES.get(payload.detected_disease, payload.detected_disease)
         
