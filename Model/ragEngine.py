@@ -63,7 +63,7 @@ Respond ONLY with a valid JSON block matching the schema. Do not include markdow
         return "general farming"
 
 
-def generate_remedy(user_query: str, detected_disease: str, display_name: str) -> str:
+def generate_remedy(user_query: str, detected_disease: str, display_name: str, language: str = "English") -> str:
     """
     Routes query and returns final generated output from Groq.
     """
@@ -86,6 +86,7 @@ The farmer's cotton crop has been diagnosed with: **{display_name}**.
 
 Use ONLY the following verified agricultural manual context to answer the user's question. Provide actionable, step-by-step methods that a local farmer can execute easily.
 If the context does not contain organic remedies for this specific problem, say you don't know. Do not hallucinate or recommend chemical pesticides.
+Always respond to the user in this language: {language}.
 
 --- Context From Manual ---
 {context}
@@ -96,9 +97,10 @@ If the context does not contain organic remedies for this specific problem, say 
         return response.content
         
     else:
-        system_prompt = SystemMessage(content="""
+        system_prompt = SystemMessage(content=f"""
 You are Kisan Mitra AI, an empathetic agricultural assistant helping Indian cotton farmers with general cultivation guidance.
 Answer the farmer's question thoroughly using safe, practical, organic, and expert agricultural advice tailored to Indian soil, timelines, and cotton care.
+Always respond to the user in this language: {language}.
 """)
         
         messages = [system_prompt] + [HumanMessage(content=user_query)]

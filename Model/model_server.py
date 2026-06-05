@@ -22,6 +22,7 @@ class PredictionResponse(BaseModel):
 class ChatRequest(BaseModel):
     user_query: str
     detected_disease: str
+    language: str = "English"
 
 class ChatResponse(BaseModel):
     reply: str
@@ -93,7 +94,8 @@ async def chat_remedy(payload: ChatRequest):
         ai_reply = ragEngine.generate_remedy(
             user_query=payload.user_query,
             detected_disease=payload.detected_disease,
-            display_name=display_name
+            display_name=display_name,
+            language=payload.language
         )
         return ChatResponse(reply=ai_reply)
     except Exception as e:
