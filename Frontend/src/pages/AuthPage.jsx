@@ -57,7 +57,7 @@ const AuthPage = ({ isLoginRoute = false }) => {
       const success = await signup({ name: formData.name, email: formData.email, password: formData.password });
       if (success) {
         // Redirect to Login upon successful Signup
-        navigate('/api/v1/auth/login');
+        navigate('/login');
       }
     }
   };
@@ -242,7 +242,7 @@ const AuthPage = ({ isLoginRoute = false }) => {
               {isLogin ? "Don't have an account? " : "Already have an account? "}
               <button 
                 type="button"
-                onClick={() => navigate(isLogin ? '/api/v1/auth/register' : '/api/v1/auth/login')}
+                onClick={() => navigate(isLogin ? '/register' : '/login')}
                 className="text-[#2b9365] font-semibold hover:underline ml-1"
               >
                 {isLogin ? "Sign up" : "Log in"}

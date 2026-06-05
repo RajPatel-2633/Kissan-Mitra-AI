@@ -140,7 +140,7 @@ const SettingsPage = () => {
               type="button"
               onClick={() => {
                 logout();
-                window.location.href = '/api/v1/auth/login';
+                window.location.href = '/login';
               }}
               className="text-red-500 hover:bg-red-50 px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-colors border border-transparent hover:border-red-100"
             >
