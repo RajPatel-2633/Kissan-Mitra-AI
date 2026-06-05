@@ -19,6 +19,9 @@ const diagnoseCrop = asyncHandler(async(req,res,next)=>{
     const image = await axios.get(cloudinaryImageURL,{
         responseType:'arraybuffer'
     });
+
+    const imageBuffer = Buffer.from(image.data);
+
     form.append('image',image.data,{
         filename: req.file.originalname,
         contentType: req.file.mimetype
