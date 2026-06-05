@@ -77,7 +77,7 @@ const AIAssistancePage = () => {
             disease: data.displayName,
             confidence: data.confidence.toFixed(1) + "%",
             severity: data.isHealthy ? "low" : "high",
-            recommendation: "Please ask the AI assistant on the right for organic remedies and detailed solutions."
+            recommendation: t("Please ask the AI assistant on the right for organic remedies and detailed solutions.")
           });
           setCurrentRecordId(data._id);
           setChatHistory(data.chatLog || []);
@@ -154,7 +154,7 @@ const AIAssistancePage = () => {
         disease: data.displayName,
         confidence: data.confidence.toFixed(1) + "%",
         severity: data.isHealthy ? "low" : "high",
-        recommendation: "Please ask the AI assistant on the right for organic remedies and detailed solutions."
+        recommendation: t("Please ask the AI assistant on the right for organic remedies and detailed solutions.")
       });
       
       setChatHistory([]);
@@ -324,8 +324,8 @@ const AIAssistancePage = () => {
             </div>
             <div className="absolute inset-0 rounded-full border-2 border-[#2b9365] animate-ping opacity-20"></div>
           </div>
-          <h3 className="text-3xl font-extrabold text-[#113a26] mb-3 animate-pulse">Analyzing Crop...</h3>
-          <p className="text-gray-500 font-medium">Please wait while our AI models examine the image</p>
+          <h3 className="text-3xl font-extrabold text-[#113a26] mb-3 animate-pulse">{t('Analyzing Crop...')}</h3>
+          <p className="text-gray-500 font-medium">{t('Please wait while our AI models examine the image')}</p>
         </div>
       )}
 
@@ -372,7 +372,7 @@ const AIAssistancePage = () => {
                             <AlertTriangle size={24} className="text-red-500" />
                           )}
                           <h4 className={`text-xl font-bold ${predictionResult.disease === 'Healthy' ? 'text-green-700' : 'text-red-600'}`}>
-                            {predictionResult.disease}
+                            {t(predictionResult.disease)}
                           </h4>
                         </div>
                         <p className="text-sm text-gray-500 font-medium">{t('Confidence:')} <span className="text-gray-800 font-bold text-base">{predictionResult.confidence}</span></p>
@@ -461,18 +461,18 @@ const AIAssistancePage = () => {
                         <span className="text-[10px] text-gray-400 font-bold absolute z-0">IMG {img.id}</span>
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors z-20 pointer-events-none"></div>
                       </div>
-                      <span className="text-[12px] font-bold text-gray-600 bg-gray-100 px-3 py-1 rounded-full text-center max-w-[90px] leading-tight">{img.label}</span>
+                      <span className="text-[12px] font-bold text-gray-600 bg-gray-100 px-3 py-1 rounded-full text-center max-w-[90px] leading-tight">{t(img.label)}</span>
                     </div>
                   ))}
                 </div>
                 <p className="text-[15px] text-gray-400 text-center mt-4 font-medium px-4 italic leading-relaxed">
-                  *Note: The images chosen for this demo are sourced from Google and are not from our official Test Set.
+                  {t('*Note: The images chosen for this demo are sourced from Google and are not from our official Test Set.')}
                 </p>
               </div>
               
               <div className="flex items-center justify-center gap-2 mt-5 text-gray-400">
                 <ShieldCheck size={20} />
-                <p className="text-[15px] font-medium">Your data is secure and private</p>
+                <p className="text-[15px] font-medium">{t('Your data is secure and private')}</p>
               </div>
             </div>
 
@@ -506,7 +506,7 @@ const AIAssistancePage = () => {
                  <span className="text-sm">🌿</span>
               </div>
               <div className="bg-white border border-green-50 px-5 py-3.5 rounded-2xl rounded-tl-sm shadow-sm max-w-[85%]">
-                <p className="text-[14px] font-medium text-gray-700">{currentRecordId ? "I see your diagnosis is ready. How can I help you treat this crop?" : t('Hi Kisan! Please upload a crop image on the left to get started!')}</p>
+                <p className="text-[14px] font-medium text-gray-700">{currentRecordId ? t("I see your diagnosis is ready. How can I help you treat this crop?") : t('Hi Kisan! Please upload a crop image on the left to get started!')}</p>
               </div>
             </div>
             
@@ -534,7 +534,7 @@ const AIAssistancePage = () => {
                 </div>
                 <div className="bg-white border border-green-50 px-5 py-3.5 rounded-2xl rounded-tl-sm shadow-sm flex items-center gap-2">
                   <Loader2 size={16} className="text-[#2b9365] animate-spin" />
-                  <p className="text-[14px] font-medium text-gray-500">Typing...</p>
+                  <p className="text-[14px] font-medium text-gray-500">{t('Typing...')}</p>
                 </div>
               </div>
             )}

@@ -80,7 +80,18 @@ const resources = {
       "Crop is healthy. Keep up the good work!": "Crop is healthy. Keep up the good work!",
       "Disease detected. Requires immediate attention and treatment.": "Disease detected. Requires immediate attention and treatment.",
       "View Chat": "View Chat",
-      "Failed to load your scan history.": "Failed to load your scan history."
+      "Failed to load your scan history.": "Failed to load your scan history.",
+      "Please ask the AI assistant on the right for organic remedies and detailed solutions.": "Please ask the AI assistant on the right for organic remedies and detailed solutions.",
+      "Bacterial Blight": "Bacterial Blight",
+      "Curl Virus": "Curl Virus",
+      "Fusarium Wilt": "Fusarium Wilt",
+      "Healthy": "Healthy",
+      "*Note: The images chosen for this demo are sourced from Google and are not from our official Test Set.": "*Note: The images chosen for this demo are sourced from Google and are not from our official Test Set.",
+      "Your data is secure and private": "Your data is secure and private",
+      "I see your diagnosis is ready. How can I help you treat this crop?": "I see your diagnosis is ready. How can I help you treat this crop?",
+      "Typing...": "Typing...",
+      "Analyzing Crop...": "Analyzing Crop...",
+      "Please wait while our AI models examine the image": "Please wait while our AI models examine the image"
     }
   },
   hi: {
@@ -160,7 +171,18 @@ const resources = {
       "Crop is healthy. Keep up the good work!": "फसल स्वस्थ है। अच्छा काम जारी रखें!",
       "Disease detected. Requires immediate attention and treatment.": "बीमारी का पता चला। तत्काल ध्यान और उपचार की आवश्यकता है।",
       "View Chat": "चैट देखें",
-      "Failed to load your scan history.": "आपका स्कैन इतिहास लोड करने में विफल।"
+      "Failed to load your scan history.": "आपका स्कैन इतिहास लोड करने में विफल।",
+      "Please ask the AI assistant on the right for organic remedies and detailed solutions.": "जैविक उपचार और विस्तृत समाधानों के लिए कृपया दाईं ओर AI सहायक से पूछें।",
+      "Bacterial Blight": "बैक्टीरियल ब्लाइट",
+      "Curl Virus": "कर्ल वायरस",
+      "Fusarium Wilt": "फ्यूजेरियम विल्ट",
+      "Healthy": "स्वस्थ",
+      "*Note: The images chosen for this demo are sourced from Google and are not from our official Test Set.": "*नोट: इस डेमो के लिए चुनी गई छवियां Google से ली गई हैं और हमारे आधिकारिक परीक्षण सेट से नहीं हैं।",
+      "Your data is secure and private": "आपका डेटा सुरक्षित और निजी है",
+      "I see your diagnosis is ready. How can I help you treat this crop?": "मैं देख रहा हूँ कि आपका निदान तैयार है। मैं इस फसल के उपचार में आपकी कैसे मदद कर सकता हूँ?",
+      "Typing...": "टाइप कर रहा है...",
+      "Analyzing Crop...": "फसल का विश्लेषण कर रहा है...",
+      "Please wait while our AI models examine the image": "कृपया प्रतीक्षा करें जबकि हमारे AI मॉडल छवि की जांच कर रहे हैं"
     }
   },
   mr: {
@@ -240,7 +262,18 @@ const resources = {
       "Crop is healthy. Keep up the good work!": "पीक निरोगी आहे. चांगले काम चालू ठेवा!",
       "Disease detected. Requires immediate attention and treatment.": "रोग आढळला. त्वरित लक्ष आणि उपचारांची आवश्यकता आहे.",
       "View Chat": "चॅट पहा",
-      "Failed to load your scan history.": "तुमचा स्कॅन इतिहास लोड करण्यात अयशस्वी."
+      "Failed to load your scan history.": "तुमचा स्कॅन इतिहास लोड करण्यात अयशस्वी.",
+      "Please ask the AI assistant on the right for organic remedies and detailed solutions.": "सेंद्रिय उपाय आणि सविस्तर उपायांसाठी कृपया उजवीकडील AI सहाय्यकाला विचारा.",
+      "Bacterial Blight": "बॅक्टेरियल ब्लाइट",
+      "Curl Virus": "कर्ल व्हायरस",
+      "Fusarium Wilt": "फ्युसेरियम विल्ट",
+      "Healthy": "निरोगी",
+      "*Note: The images chosen for this demo are sourced from Google and are not from our official Test Set.": "*टीप: या डेमोसाठी निवडलेल्या प्रतिमा Google वरून घेतल्या आहेत आणि आमच्या अधिकृत चाचणी सेटमधील नाहीत.",
+      "Your data is secure and private": "तुमचा डेटा सुरक्षित आणि खाजगी आहे",
+      "I see your diagnosis is ready. How can I help you treat this crop?": "मला दिसते की तुमचे निदान तयार आहे. मी तुम्हाला या पिकावर उपचार करण्यास कशी मदत करू शकेन?",
+      "Typing...": "टाइप करत आहे...",
+      "Analyzing Crop...": "पिकाचे विश्लेषण करत आहे...",
+      "Please wait while our AI models examine the image": "कृपया आमचे AI मॉडेल प्रतिमेचे परीक्षण करत असताना प्रतीक्षा करा"
     }
   },
   gu: {
@@ -320,7 +353,18 @@ const resources = {
       "Crop is healthy. Keep up the good work!": "પાક સ્વસ્થ છે. સારું કામ ચાલુ રાખો!",
       "Disease detected. Requires immediate attention and treatment.": "રોગ જોવા મળ્યો. તાત્કાલિક ધ્યાન અને સારવારની જરૂર છે.",
       "View Chat": "ચેટ જુઓ",
-      "Failed to load your scan history.": "તમારો સ્કેન ઇતિહાસ લોડ કરવામાં નિષ્ફળ."
+      "Failed to load your scan history.": "તમારો સ્કેન ઇતિહાસ લોડ કરવામાં નિષ્ફળ.",
+      "Please ask the AI assistant on the right for organic remedies and detailed solutions.": "કૃપા કરીને જમણી બાજુએ AI સહાયકને ઓર્ગેનિક ઉપાયો અને વિગતવાર ઉકેલો માટે પૂછો.",
+      "Bacterial Blight": "બેક્ટેરિયલ બ્લાઈટ",
+      "Curl Virus": "કર્લ વાયરસ",
+      "Fusarium Wilt": "ફ્યુઝેરિયમ વિલ્ટ",
+      "Healthy": "સ્વસ્થ",
+      "*Note: The images chosen for this demo are sourced from Google and are not from our official Test Set.": "*નોંધ: આ ડેમો માટે પસંદ કરેલી છબીઓ Google પરથી લેવામાં આવી છે અને અમારા સત્તાવાર પરીક્ષણ સેટમાંથી નથી.",
+      "Your data is secure and private": "તમારો ડેટા સુરક્ષિત અને ખાનગી છે",
+      "I see your diagnosis is ready. How can I help you treat this crop?": "હું જોઉં છું કે તમારું નિદાન તૈયાર છે. હું આ પાકની સારવાર કરવામાં તમારી કેવી રીતે મદદ કરી શકું?",
+      "Typing...": "ટાઇપ કરી રહ્યું છે...",
+      "Analyzing Crop...": "પાકનું વિશ્લેષણ કરી રહ્યું છે...",
+      "Please wait while our AI models examine the image": "કૃપા કરીને રાહ જુઓ જ્યારે અમારા AI મોડલ છબીની તપાસ કરે છે"
     }
   }
 };

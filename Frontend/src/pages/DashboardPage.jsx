@@ -71,7 +71,7 @@ const DashboardPage = () => {
       </div>
 
       {/* Auto-rolling Image Carousel */}
-      <div className="relative w-[92%] max-w-6xl mx-auto h-[500px] md:h-[660px] rounded-[32px] overflow-hidden shadow-2xl group bg-transparent z-10">
+      <div className="relative w-[92%] max-w-6xl mx-auto -mt-6 h-[500px] md:h-[660px] rounded-[32px] overflow-hidden shadow-2xl group bg-transparent z-10">
         
         <div 
           className="flex transition-transform duration-700 ease-in-out h-full"
