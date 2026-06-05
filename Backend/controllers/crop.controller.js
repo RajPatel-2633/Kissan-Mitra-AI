@@ -55,7 +55,7 @@ const diagnoseCrop = asyncHandler(async(req,res,next)=>{
 });
 
 const chatWithAI = asyncHandler(async(req,res,next)=>{
-    const {message} = req.body;
+    const {message, language} = req.body;
     const {recordId} = req.params;
 
     if(!message){
@@ -69,7 +69,8 @@ const chatWithAI = asyncHandler(async(req,res,next)=>{
 
     const RAGResponse = await axios.post(`${process.env.FASTAPI_URI}/chat/remedy`,{
         user_query: message,
-        detected_disease: historySession.diseaseCode
+        detected_disease: historySession.diseaseCode,
+        language: language || 'English'
     })
 
     const AIReply =  RAGResponse.data.reply;
